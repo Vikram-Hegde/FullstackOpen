@@ -12,7 +12,7 @@ const App = () => {
 	useEffect(() => {
 		fetch('http://localhost:3000/persons')
 			.then((res) => res.json())
-			.then((data) => setPersons(data))
+			.then(setPersons)
 	}, [])
 
 	const filter = search
