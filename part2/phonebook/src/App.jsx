@@ -21,17 +21,25 @@ const App = () => {
 		  )
 		: persons
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault()
+		const newPerson = {
+			name: newName,
+			number: newPhoneNumber,
+		}
 		const ifExists = persons
 			.map((x) => x.name.toLowerCase())
 			.indexOf(newName.toLowerCase())
-		if (ifExists === -1)
-			setPersons([
-				...persons,
-				{ id: crypto.randomUUID(), name: newName, number: newPhoneNumber },
-			])
-		else alert(`${newName} is already added to phonebook`)
+		if (ifExists === -1) {
+			const response = await fetch('http://localhost:3000/persons', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(newPerson),
+			})
+			setPersons([...persons, await response.json()])
+		} else alert(`${newName} is already added to phonebook`)
 		setNewName('')
 		setNewPhoneNumber('')
 	}
