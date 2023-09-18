@@ -22,4 +22,15 @@ const deleteNumber = async (id) => {
 	})
 }
 
-export default { getAll, create, deleteNumber }
+const update = async (id, data) => {
+	const response = await fetch(`${baseURL}/${id}`, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data),
+	})
+	return response.json()
+}
+
+export default { getAll, create, deleteNumber, update }

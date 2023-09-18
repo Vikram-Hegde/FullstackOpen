@@ -24,23 +24,32 @@ const App = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
+
 		const newPerson = {
 			name: newName.trim(),
 			number: newPhoneNumber,
 		}
-		const ifExists = persons
-			.map((x) => x.name.toLowerCase())
-			.indexOf(newName.toLowerCase())
-		if (ifExists === -1) {
-			const response = await fetch('http://localhost:3000/persons', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(newPerson),
-			})
-			setPersons([...persons, await response.json()])
-		} else alert(`${newName} is already added to phonebook`)
+
+		const personExists = persons.find((person) => person.name === newPerson.name)
+		if (!personExists) {
+			const response = await phoneBook.create(newPerson)
+			setPersons([...persons, response])
+		} else {
+			if (
+				window.confirm(
+					`${newPerson.name} already exists, replace the old number with the new one?`
+				)
+			) {
+				const changedNumber = { ...personExists, number: newPerson.number }
+				const response = await phoneBook.update(personExists.id, changedNumber)
+				setPersons(
+					persons.map((person) =>
+						person.id === personExists.id ? response : person
+					)
+				)
+			}
+		}
+
 		setNewName('')
 		setNewPhoneNumber('')
 	}
