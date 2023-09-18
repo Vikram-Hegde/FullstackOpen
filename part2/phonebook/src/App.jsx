@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import phoneBook from './phoneBook.js'
 
 const App = () => {
 	const [persons, setPersons] = useState([])
@@ -10,21 +11,21 @@ const App = () => {
 	const [search, setSearch] = useState('')
 
 	useEffect(() => {
-		fetch('http://localhost:3000/persons')
-			.then((res) => res.json())
-			.then(setPersons)
+		;(async function () {
+			setPersons(await phoneBook.getAll())
+		})()
 	}, [])
 
 	const filter = search
 		? persons.filter((person) =>
-				person.name.toLowerCase().includes(search.toLowerCase())
+				person.name.toLowerCase().includes(search.trim().toLowerCase())
 		  )
 		: persons
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
 		const newPerson = {
-			name: newName,
+			name: newName.trim(),
 			number: newPhoneNumber,
 		}
 		const ifExists = persons
@@ -44,6 +45,14 @@ const App = () => {
 		setNewPhoneNumber('')
 	}
 
+	const handleDelete = async (id) => {
+		const obj = persons.find((person) => person.id === id)
+		if (window.confirm(`Delete ${obj.name}`)) {
+			await phoneBook.deleteNumber(id)
+			setPersons(await phoneBook.getAll())
+		}
+	}
+
 	return (
 		<div>
 			<h2>Phonebook</h2>
@@ -60,7 +69,7 @@ const App = () => {
 				newPhoneNumber={newPhoneNumber}
 			/>
 			<h2>Numbers</h2>
-			<Persons data={filter} />
+			<Persons data={filter} handleDelete={handleDelete} />
 		</div>
 	)
 }
