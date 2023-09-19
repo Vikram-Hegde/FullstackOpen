@@ -1,0 +1,16 @@
+.notification {
+	padding: 0.5rem;
+	font-size: 2rem;
+	background-color: #eee;
+	color: var(--accent, green);
+	border: 2px solid;
+	margin-block: 1rem;
+
+	&[data-type='success'] {
+		--accent: green;
+	}
+
+	&[data-type='danger'] {
+		--accent: red;
+	}
+}
