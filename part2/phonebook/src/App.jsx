@@ -46,9 +46,10 @@ const App = () => {
 			(person) => person.name === newPerson.name
 		)
 		if (!personExists) {
-			const response = await phoneBook.create(newPerson)
-			setPersons([...persons, response])
-			displayNotification(`Added ${newPerson.name}`, 'success')
+			phoneBook.create(newPerson).then((data) => {
+				setPersons([...persons, data])
+				displayNotification(`Added ${newPerson.name}`, 'success')
+			})
 		} else {
 			if (
 				window.confirm(
@@ -56,13 +57,25 @@ const App = () => {
 				)
 			) {
 				const changedNumber = { ...personExists, number: newPerson.number }
-				const response = await phoneBook.update(personExists.id, changedNumber)
-				setPersons(
-					persons.map((person) =>
-						person.id === personExists.id ? response : person
-					)
-				)
-				displayNotification(`Modified ${newPerson.name}`, 'success')
+				phoneBook
+					.update(personExists.id, changedNumber)
+					.then((data) => {
+						setPersons(
+							persons.map((person) =>
+								person.id === personExists.id ? data : person
+							)
+						)
+						displayNotification(`Modified ${newPerson.name}`, 'success')
+					})
+					.catch(() => {
+						displayNotification(
+							`${newPerson.name} was already removed from the server`,
+							'danger'
+						)
+						setPersons(
+							persons.filter((person) => person.name !== newPerson.name)
+						)
+					})
 			}
 		}
 
@@ -78,11 +91,12 @@ const App = () => {
 				setPersons(await phoneBook.getAll())
 				displayNotification(`Deleted ${obj.name}`, 'danger')
 			} catch (e) {
+				console.error(e)
+				console.log('is this firing when it is supposed to')
 				displayNotification(
-					`Note ${obj.name} was already removed from the server`,
+					`${obj.name} was already removed from the server`,
 					'danger'
 				)
-				console.error(e)
 				setPersons(persons.filter((person) => person.name !== obj.name))
 			}
 		}

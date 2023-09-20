@@ -1,36 +1,44 @@
 const baseURL = 'http://localhost:3000/persons'
 
 const getAll = async () => {
-	const data = await fetch(baseURL)
-	return data.json()
+	const request = await fetch(baseURL)
+	if (!request.ok) throw new Error('couldnt connect to server')
+	const response = await request.json()
+	return response
 }
 
 const create = async (newData) => {
-	const response = await fetch(baseURL, {
+	const request = await fetch(baseURL, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(newData),
 	})
-	return response.json()
+	if (!request.ok) throw new Error('couldnt create a new entry')
+	const response = await request.json()
+	return response
 }
 
 const deleteNumber = async (id) => {
-	await fetch(`${baseURL}/${id}`, {
+	const request = await fetch(`${baseURL}/${id}`, {
 		method: 'DELETE',
 	})
+	if (!request.ok) throw new Error()
+	return request
 }
 
 const update = async (id, data) => {
-	const response = await fetch(`${baseURL}/${id}`, {
+	const request = await fetch(`${baseURL}/${id}`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(data),
 	})
-	return response.json()
+	if (!request.ok) throw new Error()
+	const response = await request.json()
+	return response
 }
 
 export default { getAll, create, deleteNumber, update }
