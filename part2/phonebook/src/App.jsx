@@ -91,8 +91,6 @@ const App = () => {
 				setPersons(await phoneBook.getAll())
 				displayNotification(`Deleted ${obj.name}`, 'danger')
 			} catch (e) {
-				console.error(e)
-				console.log('is this firing when it is supposed to')
 				displayNotification(
 					`${obj.name} was already removed from the server`,
 					'danger'

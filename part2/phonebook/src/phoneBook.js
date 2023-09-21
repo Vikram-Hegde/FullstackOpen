@@ -2,9 +2,8 @@ const baseURL = 'http://localhost:3000/persons'
 
 const getAll = async () => {
 	const request = await fetch(baseURL)
-	if (!request.ok) throw new Error('couldnt connect to server')
-	const response = await request.json()
-	return response
+	if (!request.ok) throw new Error('could not connect to server')
+	return request.json()
 }
 
 const create = async (newData) => {
@@ -15,9 +14,8 @@ const create = async (newData) => {
 		},
 		body: JSON.stringify(newData),
 	})
-	if (!request.ok) throw new Error('couldnt create a new entry')
-	const response = await request.json()
-	return response
+	if (!request.ok) throw new Error('could not create a new entry')
+	return request.json()
 }
 
 const deleteNumber = async (id) => {
@@ -37,8 +35,7 @@ const update = async (id, data) => {
 		body: JSON.stringify(data),
 	})
 	if (!request.ok) throw new Error()
-	const response = await request.json()
-	return response
+	return request.json()
 }
 
 export default { getAll, create, deleteNumber, update }
