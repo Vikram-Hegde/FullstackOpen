@@ -16,11 +16,11 @@ const App = () => {
 
 	const filtered =
 		data?.filter((obj) =>
-			obj.name.common.toLowerCase().includes(country.toLowerCase())
+			obj.name.official.toLowerCase().includes(country.toLowerCase())
 		) || []
 
 	if (filtered.length === 1)
-		fetchIndividual(filtered[0]?.name?.common).then(setIndividualCountry)
+		fetchIndividual(filtered[0]?.name?.official).then(setIndividualCountry)
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -47,7 +47,12 @@ const App = () => {
 			{filtered.length <= 10 &&
 				filtered.length > 1 &&
 				filtered.map((country) => (
-					<div key={country.name.common}>{country.name.common}</div>
+					<>
+						<div key={country.name.common}>{country.name.common}</div>
+						<button onClick={() => setCountry(country.name.official)}>
+							show
+						</button>
+					</>
 				))}
 
 			{individualCountry && filtered.length === 1 && (
@@ -65,7 +70,7 @@ const App = () => {
 						src={individualCountry.flags.svg}
 						alt={individualCountry.flags.alt}
 						height="200px"
-						width="200px"
+						width="auto"
 					/>
 				</>
 			)}
