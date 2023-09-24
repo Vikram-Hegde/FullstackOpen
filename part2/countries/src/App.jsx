@@ -1,31 +1,19 @@
 import { useEffect, useState } from 'react'
 
 const App = () => {
-	const [country, setCountry] = useState('')
+	const [input, setInput] = useState('')
 	const [data, setData] = useState(null)
-	const [individualCountry, setIndividualCountry] = useState(null)
 
-	const fetchIndividual = async (name) => {
-		const response = await (
-			await fetch(
-				`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`
-			)
-		).json()
-		return response
-	}
+	const filtered = data?.filter((country) =>
+		country.name.official.toLowerCase().includes(input.trim().toLowerCase())
+	)
 
-	const filtered =
-		data?.filter(
-			(obj) =>
-				obj.name.official.toLowerCase().startsWith(country.toLowerCase()) ||
-				obj.name.common.toLowerCase().startsWith(country.toLowerCase())
-		) || []
-
-	const handleInput = (e) => {
-		setCountry(e.target.value)
-		if (filtered.length === 1)
-			fetchIndividual(e.target.value).then(setIndividualCountry)
-	}
+	// Conditionals
+	const results = filtered?.length
+	const notFound = !results && input
+	const manyResults = input && results > 10
+	const filteredCountry = results === 1 && filtered[0]
+	const displayableResults = results >= 2 && results <= 10
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -40,43 +28,37 @@ const App = () => {
 	return (
 		<>
 			<span>find countries</span>
-			<input type="text" value={country} onChange={handleInput} />
-			{!country && <div>type to see results</div>}
-			{filtered.length === 0 && country && (
-				<div>Could not find anything similar</div>
-			)}
-			{filtered.length <= 10 &&
-				filtered.length > 1 &&
+			<input
+				type="text"
+				value={input}
+				onChange={(e) => setInput(e.target.value)}
+			/>
+			{!input && <div>type to see results</div>}
+			{notFound && <div>Could not find anything similar</div>}
+			{manyResults && <div>Too many matches, try a different filter</div>}
+			{displayableResults &&
 				filtered.map((country) => (
-					<>
-						<div key={country?.name?.official}>{country.name.common}</div>
-						<button
-							onClick={() => {
-								fetchIndividual(country.name.official).then(
-									setIndividualCountry
-								)
-								setCountry(country.name.official)
-							}}
-						>
+					<section key={country.name.official}>
+						<div>{country.name.common}</div>
+						<button onClick={() => setInput(country.name.official)}>
 							show
 						</button>
-					</>
+					</section>
 				))}
-
-			{individualCountry && filtered.length === 1 && (
+			{filteredCountry && (
 				<>
-					<h2>{individualCountry.name.official}</h2>
-					<div>capital {individualCountry.capital[0]}</div>
-					<div>area {individualCountry.area}</div>
+					<h2>{filteredCountry.name.official}</h2>
+					<div>capital {filteredCountry.capital[0]}</div>
+					<div>area {filteredCountry.area}</div>
 					<h4>Languages: </h4>
 					<ul>
-						{Object.keys(individualCountry.languages).map((lang) => (
-							<li key={lang}>{individualCountry.languages[lang]}</li>
+						{Object.keys(filteredCountry.languages).map((lang) => (
+							<li key={lang}>{filteredCountry.languages[lang]}</li>
 						))}
 					</ul>
 					<img
-						src={individualCountry.flags.svg}
-						alt={individualCountry.flags.alt}
+						src={filteredCountry.flags.svg}
+						alt={filteredCountry.flags.alt}
 						height="200px"
 						width="auto"
 					/>
@@ -85,4 +67,5 @@ const App = () => {
 		</>
 	)
 }
+
 export default App
