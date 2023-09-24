@@ -30,6 +30,8 @@ const App = () => {
 	useEffect(() => {
 		if (selectedCountry) {
 			fetchWeatherData(selectedCountry.latlng)
+		} else {
+			setWeaterData(null)
 		}
 	}, [selectedCountry])
 
@@ -45,12 +47,10 @@ const App = () => {
 
 	const showResultsMessage = () => {
 		if (!input) return 'Type to see results'
-		if (!filtered.length) return 'Could not find anything similar'
-		if (filtered.length > 10) return 'Too many matches, try a different filter'
+		if (!filtered?.length) return 'Could not find anything similar'
+		if (filtered?.length > 10) return 'Too many matches, try a different filter'
 		return null
 	}
-
-	console.log(weatherData)
 
 	const displayResults = () => {
 		if (filtered?.length > 10) return null
