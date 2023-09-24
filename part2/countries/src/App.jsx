@@ -15,12 +15,17 @@ const App = () => {
 	}
 
 	const filtered =
-		data?.filter((obj) =>
-			obj.name.official.toLowerCase().includes(country.toLowerCase())
+		data?.filter(
+			(obj) =>
+				obj.name.official.toLowerCase().startsWith(country.toLowerCase()) ||
+				obj.name.common.toLowerCase().startsWith(country.toLowerCase())
 		) || []
 
-	if (filtered.length === 1)
-		fetchIndividual(filtered[0]?.name?.official).then(setIndividualCountry)
+	const handleInput = (e) => {
+		setCountry(e.target.value)
+		if (filtered.length === 1)
+			fetchIndividual(e.target.value).then(setIndividualCountry)
+	}
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -35,11 +40,7 @@ const App = () => {
 	return (
 		<>
 			<span>find countries</span>
-			<input
-				type="text"
-				value={country}
-				onChange={(e) => setCountry(e.target.value)}
-			/>
+			<input type="text" value={country} onChange={handleInput} />
 			{!country && <div>type to see results</div>}
 			{filtered.length === 0 && country && (
 				<div>Could not find anything similar</div>
@@ -48,8 +49,15 @@ const App = () => {
 				filtered.length > 1 &&
 				filtered.map((country) => (
 					<>
-						<div key={country.name.common}>{country.name.common}</div>
-						<button onClick={() => setCountry(country.name.official)}>
+						<div key={country?.name?.official}>{country.name.common}</div>
+						<button
+							onClick={() => {
+								fetchIndividual(country.name.official).then(
+									setIndividualCountry
+								)
+								setCountry(country.name.official)
+							}}
+						>
 							show
 						</button>
 					</>
