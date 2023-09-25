@@ -6,7 +6,8 @@
 	"type": "module",
 	"scripts": {
 		"build": "pnpm install",
-		"start": "pnpm install && node index.js"
+		"start": "node index.js",
+		"dev": "nodemon index.js"
 	},
 	"keywords": [],
 	"author": "",
