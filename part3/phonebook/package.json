@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
+		"build": "pnpm install && node index.js",
 		"start": "pnpm install && node index.js"
 	},
 	"keywords": [],
