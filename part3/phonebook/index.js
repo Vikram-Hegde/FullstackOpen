@@ -29,6 +29,13 @@ app.get('/api/persons', (request, response) => {
 	response.json(phoneBook)
 })
 
+app.get('/info', (request, response) => {
+	response.send(`
+	<p>Phonebook has info for ${phoneBook.length} people</p>	
+	<p>${new Date()}</p>
+	`)
+})
+
 app.listen(3000, () => {
 	console.log('Server is running on port 3000')
 })
