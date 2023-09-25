@@ -1,7 +1,9 @@
 import express from 'express'
-import crypto from 'crypto'
-import { notStrictEqual } from 'assert'
-import { log } from 'console'
+import morgan from 'morgan'
+
+morgan.token('response', (req, res) =>
+	req.body ? JSON.stringify(req.body) : ''
+)
 
 let phoneBook = [
 	{
@@ -32,8 +34,13 @@ const generateID = () => {
 }
 
 const app = express()
-
 app.use(express.json())
+// app.use(morgan('tiny'))
+app.use(
+	morgan(
+		':method :url :status :res[content-length] - :response-time ms :response'
+	)
+)
 
 app.get('/api/persons', (request, response) => {
 	response.json(phoneBook)
