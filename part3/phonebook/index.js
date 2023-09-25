@@ -1,5 +1,6 @@
 import express from 'express'
 import morgan from 'morgan'
+import cors from 'cors'
 
 morgan.token('response', (req, res) =>
 	req.body ? JSON.stringify(req.body) : ''
@@ -34,8 +35,8 @@ const generateID = () => {
 }
 
 const app = express()
+app.use(cors())
 app.use(express.json())
-// app.use(morgan('tiny'))
 app.use(
 	morgan(
 		':method :url :status :res[content-length] - :response-time ms :response'
