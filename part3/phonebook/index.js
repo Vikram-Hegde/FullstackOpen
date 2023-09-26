@@ -58,11 +58,12 @@ app.get('/api/persons/:id', (request, response) => {
 app.delete('/api/persons/:id', (request, response) => {
 	phoneBook
 		.findByIdAndDelete(request.params.id)
-		.then(() => {
+		.then((result) => {
+			if (!result) throw new Error('Resource not found')
 			response.sendStatus(204)
 		})
 		.catch((e) => {
-			console.error('resource was not found ', e)
+			console.error(e)
 			response.sendStatus(404)
 		})
 })
@@ -77,14 +78,18 @@ app.post('/api/persons', (request, response) => {
 	}
 
 	phoneBook.find({ name: body.name }).then((result) => {
-		if (result.length) {
-			return response.status(409).json({
-				error: 'name must be unique',
-			})
-		} else {
-			const newEntry = new phoneBook(body)
-			newEntry.save().then((result) => response.json(result))
-		}
+		// implementing this in the later excersise
+		// if (result.length) {
+		// 	return response.status(409).json({
+		// 		error: 'name must be unique',
+		// 	})
+		// } else {
+		// 	const newEntry = new phoneBook(body)
+		// 	newEntry.save().then((result) => response.json(result))
+		// }
+
+		const newEntry = new phoneBook(body)
+		newEntry.save().then((result) => response.json(result))
 	})
 })
 

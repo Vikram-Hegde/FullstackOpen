@@ -25,6 +25,8 @@ const App = () => {
 		  )
 		: persons
 
+	console.log(filter)
+
 	const displayNotification = (message, type) => {
 		setNotification({ message, type })
 		setTimeout(() => {
@@ -42,42 +44,47 @@ const App = () => {
 			number: newPhoneNumber,
 		}
 
-		const personExists = persons.find(
-			(person) => person.name === newPerson.name
-		)
-		if (!personExists) {
-			phoneBook.create(newPerson).then((data) => {
-				setPersons([...persons, data])
-				displayNotification(`Added ${newPerson.name}`, 'success')
-			})
-		} else {
-			if (
-				window.confirm(
-					`${newPerson.name} already exists, replace the old number with the new one?`
-				)
-			) {
-				const changedNumber = { ...personExists, number: newPerson.number }
-				phoneBook
-					.update(personExists.id, changedNumber)
-					.then((data) => {
-						setPersons(
-							persons.map((person) =>
-								person.id === personExists.id ? data : person
-							)
-						)
-						displayNotification(`Modified ${newPerson.name}`, 'success')
-					})
-					.catch(() => {
-						displayNotification(
-							`${newPerson.name} was already removed from the server`,
-							'danger'
-						)
-						setPersons(
-							persons.filter((person) => person.name !== newPerson.name)
-						)
-					})
-			}
-		}
+		phoneBook.create(newPerson).then((data) => {
+			setPersons([...persons, data])
+			displayNotification(`Added ${newPerson.name}`, 'success')
+		})
+
+		// const personExists = persons.find(
+		// 	(person) => person.name === newPerson.name
+		// )
+		// if (!personExists) {
+		// 	phoneBook.create(newPerson).then((data) => {
+		// 		setPersons([...persons, data])
+		// 		displayNotification(`Added ${newPerson.name}`, 'success')
+		// 	})
+		// } else {
+		// 	if (
+		// 		window.confirm(
+		// 			`${newPerson.name} already exists, replace the old number with the new one?`
+		// 		)
+		// 	) {
+		// 		const changedNumber = { ...personExists, number: newPerson.number }
+		// 		phoneBook
+		// 			.update(personExists.id, changedNumber)
+		// 			.then((data) => {
+		// 				setPersons(
+		// 					persons.map((person) =>
+		// 						person.id === personExists.id ? data : person
+		// 					)
+		// 				)
+		// 				displayNotification(`Modified ${newPerson.name}`, 'success')
+		// 			})
+		// 			.catch(() => {
+		// 				displayNotification(
+		// 					`${newPerson.name} was already removed from the server`,
+		// 					'danger'
+		// 				)
+		// 				setPersons(
+		// 					persons.filter((person) => person.name !== newPerson.name)
+		// 				)
+		// 			})
+		// 	}
+		// }
 
 		setNewName('')
 		setNewPhoneNumber('')
