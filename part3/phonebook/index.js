@@ -36,6 +36,7 @@ const generateID = () => {
 
 const app = express()
 app.use(cors())
+app.use(express.static('dist'))
 app.use(express.json())
 app.use(
 	morgan(
@@ -98,6 +99,8 @@ app.post('/api/persons', (request, response) => {
 	response.json(newEntry)
 })
 
-app.listen(3000, () => {
-	console.log('Server is running on port 3000')
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+	console.log(`Server is running on port ${PORT}`)
 })

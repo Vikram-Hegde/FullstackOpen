@@ -88,7 +88,7 @@ const App = () => {
 		if (window.confirm(`Delete ${obj.name}`)) {
 			try {
 				await phoneBook.deleteNumber(id)
-				setPersons(await phoneBook.getAll())
+				setPersons(persons.filter((person) => person.name !== obj.name))
 				displayNotification(`Deleted ${obj.name}`, 'danger')
 			} catch (e) {
 				displayNotification(

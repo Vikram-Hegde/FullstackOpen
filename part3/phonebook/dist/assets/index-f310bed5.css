@@ -1,0 +1,1 @@
+.notification{padding:.5rem;font-size:2rem;background-color:#eee;color:var(--accent, green);border:2px solid;margin-block:1rem}.notification[data-type=success]{--accent: green}.notification[data-type=danger]{--accent: red}
