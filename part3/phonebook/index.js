@@ -1,38 +1,11 @@
 import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
+import phoneBook from './phoneBook.js'
 
 morgan.token('response', (req, res) =>
 	req.body ? JSON.stringify(req.body) : ''
 )
-
-let phoneBook = [
-	{
-		id: 1,
-		name: 'Arto Hellas',
-		number: '040-123456',
-	},
-	{
-		id: 2,
-		name: 'Ada Lovelace',
-		number: '39-44-5323523',
-	},
-	{
-		id: 3,
-		name: 'Dan Abramov',
-		number: '12-43-234345',
-	},
-	{
-		id: 4,
-		name: 'Mary Poppendieck',
-		number: '39-23-6423122',
-	},
-]
-
-const generateID = () => {
-	const maxID = Math.max(...phoneBook.map((person) => person.id))
-	return maxID + 1
-}
 
 const app = express()
 app.use(cors())
@@ -45,33 +18,53 @@ app.use(
 )
 
 app.get('/api/persons', (request, response) => {
-	response.json(phoneBook)
+	phoneBook
+		.find({})
+		.then((result) => {
+			response.json(result)
+		})
+		.catch((e) => {
+			console.error(e)
+		})
 })
 
 app.get('/info', (request, response) => {
-	response.send(`
-	<p>Phonebook has info for ${phoneBook.length} people</p>	
-	<p>${new Date()}</p>
+	phoneBook
+		.countDocuments({})
+		.then((count) => {
+			response.status(200).send(`
+			<p>Phonebook has info for ${count} people</p>	
+			<p>${new Date()}</p>
 	`)
+		})
+		.catch((e) => {
+			console.error(e)
+		})
 })
 
 app.get('/api/persons/:id', (request, response) => {
-	const id = Number(request.params.id)
-	const note = phoneBook.find((person) => person.id === id)
-
-	if (!note) {
-		response.sendStatus(404)
-	}
-
-	response.json(note)
+	phoneBook
+		.findById(request.params.id)
+		.then((result) => {
+			if (!result) throw new Error('Not Found')
+			response.json(result)
+		})
+		.catch((e) => {
+			console.error(e)
+			response.sendStatus(404)
+		})
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-	const id = Number(request.params.id)
-	const note = phoneBook.find((person) => person.id === id)
-	if (!note) return response.sendStatus(404)
-	phoneBook = phoneBook.filter((person) => person.id !== id)
-	response.sendStatus(204)
+	phoneBook
+		.findByIdAndDelete(request.params.id)
+		.then(() => {
+			response.sendStatus(204)
+		})
+		.catch((e) => {
+			console.error('resource was not found ', e)
+			response.sendStatus(404)
+		})
 })
 
 app.post('/api/persons', (request, response) => {
@@ -83,20 +76,16 @@ app.post('/api/persons', (request, response) => {
 		})
 	}
 
-	const alreadyExists = phoneBook.find((person) => person.name === body.name)
-	if (alreadyExists) {
-		return response.status(409).json({
-			error: 'name must be unique',
-		})
-	}
-
-	const newEntry = {
-		...body,
-		id: generateID(),
-	}
-	phoneBook.push(newEntry)
-
-	response.json(newEntry)
+	phoneBook.find({ name: body.name }).then((result) => {
+		if (result.length) {
+			return response.status(409).json({
+				error: 'name must be unique',
+			})
+		} else {
+			const newEntry = new phoneBook(body)
+			newEntry.save().then((result) => response.json(result))
+		}
+	})
 })
 
 const PORT = process.env.PORT || 3000
