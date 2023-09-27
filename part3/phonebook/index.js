@@ -2,6 +2,7 @@ import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import phoneBook from './phoneBook.js'
+import errorHandler from './errorHandler.js'
 
 morgan.token('response', (req, res) =>
 	req.body ? JSON.stringify(req.body) : ''
@@ -17,6 +18,12 @@ app.use(
 	)
 )
 
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+	console.log(`Server is running on port ${PORT}`)
+})
+
 app.get('/api/persons', (request, response) => {
 	phoneBook
 		.find({})
@@ -25,6 +32,7 @@ app.get('/api/persons', (request, response) => {
 		})
 		.catch((e) => {
 			console.error(e)
+			response.sendStatus(500)
 		})
 })
 
@@ -39,32 +47,31 @@ app.get('/info', (request, response) => {
 		})
 		.catch((e) => {
 			console.error(e)
+			response.sendStatus(500)
 		})
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
 	phoneBook
 		.findById(request.params.id)
 		.then((result) => {
-			if (!result) throw new Error('Not Found')
+			if (!result) response.sendStatus(404)
 			response.json(result)
 		})
 		.catch((e) => {
-			console.error(e)
-			response.sendStatus(404)
+			next(e)
 		})
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
 	phoneBook
 		.findByIdAndDelete(request.params.id)
 		.then((result) => {
-			if (!result) throw new Error('Resource not found')
+			if (!result) response.sendStatus(404)
 			response.sendStatus(204)
 		})
 		.catch((e) => {
-			console.error(e)
-			response.sendStatus(404)
+			next(e)
 		})
 })
 
@@ -78,23 +85,30 @@ app.post('/api/persons', (request, response) => {
 	}
 
 	phoneBook.find({ name: body.name }).then((result) => {
-		// implementing this in the later excersise
-		// if (result.length) {
-		// 	return response.status(409).json({
-		// 		error: 'name must be unique',
-		// 	})
-		// } else {
-		// 	const newEntry = new phoneBook(body)
-		// 	newEntry.save().then((result) => response.json(result))
-		// }
-
 		const newEntry = new phoneBook(body)
 		newEntry.save().then((result) => response.json(result))
 	})
 })
 
-const PORT = process.env.PORT || 3000
+app.put('/api/persons/:id', (request, response, next) => {
+	const { body } = request
 
-app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`)
+	if (!body || !body.name || !body.number) {
+		return response.status(400).json({
+			error: 'content missing',
+		})
+	}
+
+	phoneBook
+		.findByIdAndUpdate(request.params.id, body, { new: true })
+		.then((result) => {
+			response.json(result)
+		})
+		.catch((e) => next(e))
 })
+
+app.use((request, response) => {
+	response.sendStatus(404)
+})
+
+app.use(errorHandler)
