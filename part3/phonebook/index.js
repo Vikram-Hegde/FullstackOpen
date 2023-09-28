@@ -75,7 +75,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 		})
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
 	const { body } = request
 
 	if (!body || !body.name || !body.number) {
@@ -84,10 +84,11 @@ app.post('/api/persons', (request, response) => {
 		})
 	}
 
-	phoneBook.find({ name: body.name }).then((result) => {
-		const newEntry = new phoneBook(body)
-		newEntry.save().then((result) => response.json(result))
-	})
+	const newEntry = new phoneBook(body)
+	newEntry
+		.save()
+		.then((result) => response.json(result))
+		.catch((e) => next(e))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -100,9 +101,18 @@ app.put('/api/persons/:id', (request, response, next) => {
 	}
 
 	phoneBook
-		.findByIdAndUpdate(request.params.id, body, { new: true })
+		.findByIdAndUpdate(request.params.id, body, {
+			new: true,
+			runValidators: true,
+			context: 'query',
+		})
 		.then((result) => {
-			response.json(result)
+			if (!result) {
+				response.status(404).json({
+					error:
+						'Requested resource was not found, or was already removed from server',
+				})
+			} else response.json(result)
 		})
 		.catch((e) => next(e))
 })

@@ -1,10 +1,14 @@
-const errorHandler = (error, request, response, next) => {
-	console.error(error)
+const errorHandler = (err, request, response, next) => {
+	console.error(err)
 
-	if (error.name === 'CastError')
+	if (err.name === 'CastError')
 		return response.status(400).send({ error: 'malformatted id' })
 
-	next(error)
+	if (err.name === 'ValidationError') {
+		return response.status(400).send({ error: `${err.message}` })
+	}
+
+	next(err)
 }
 
 export default errorHandler

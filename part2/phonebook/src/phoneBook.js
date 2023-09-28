@@ -1,21 +1,27 @@
 const baseURL = '/api/persons'
 
 const getAll = async () => {
-	const request = await fetch(baseURL)
-	if (!request.ok) throw new Error('could not connect to server')
-	return request.json()
+	const response = await fetch(baseURL)
+	const data = await response.json()
+
+	if (!response?.ok) throw new Error(data.error)
+
+	return data
 }
 
 const create = async (newData) => {
-	const request = await fetch(baseURL, {
+	const response = await fetch(baseURL, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(newData),
 	})
-	if (!request.ok) throw new Error('could not create a new entry')
-	return request.json()
+	const data = await response.json()
+
+	if (!response?.ok) throw new Error(data.error)
+
+	return data
 }
 
 const deleteNumber = async (id) => {
@@ -26,16 +32,18 @@ const deleteNumber = async (id) => {
 	return request
 }
 
-const update = async (id, data) => {
-	const request = await fetch(`${baseURL}/${id}`, {
+const update = async (id, newData) => {
+	const response = await fetch(`${baseURL}/${id}`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify(data),
+		body: JSON.stringify(newData),
 	})
-	if (!request.ok) throw new Error()
-	return request.json()
+	const data = await response.json()
+	if (!response?.ok) throw new Error(data.error)
+
+	return data
 }
 
 export default { getAll, create, deleteNumber, update }

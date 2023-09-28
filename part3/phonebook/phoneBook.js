@@ -9,8 +9,22 @@ connect(process.env.MONGO_URI)
 	})
 
 const phoneSchema = new Schema({
-	name: String,
-	number: String,
+	name: {
+		type: String,
+		minLength: 3,
+		required: true,
+	},
+	number: {
+		type: String,
+		minLength: 8,
+		validate: {
+			validator: function (v) {
+				return /\d{2,3}-\d+/.test(v)
+			},
+			message: (prop) => `${prop.value} is not a valid phone number`,
+		},
+		required: true,
+	},
 })
 
 // to remove _id and __v fields from output

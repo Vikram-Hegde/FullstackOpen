@@ -46,10 +46,15 @@ const App = () => {
 			(person) => person.name === newPerson.name
 		)
 		if (!personExists) {
-			phoneBook.create(newPerson).then((data) => {
-				setPersons([...persons, data])
-				displayNotification(`Added ${newPerson.name}`, 'success')
-			})
+			phoneBook
+				.create(newPerson)
+				.then((data) => {
+					setPersons([...persons, data])
+					displayNotification(`Added ${newPerson.name}`, 'success')
+				})
+				.catch((e) => {
+					displayNotification(`Error: ${e}`, 'danger')
+				})
 		} else {
 			if (
 				window.confirm(
@@ -67,14 +72,18 @@ const App = () => {
 						)
 						displayNotification(`Modified ${newPerson.name}`, 'success')
 					})
-					.catch(() => {
-						displayNotification(
-							`${newPerson.name} was already removed from the server`,
-							'danger'
-						)
-						setPersons(
-							persons.filter((person) => person.name !== newPerson.name)
-						)
+					.catch((e) => {
+						if (`${e}`.includes('removed')) {
+							displayNotification(
+								`${newPerson.name} was already removed from the server`,
+								'danger'
+							)
+							setPersons(
+								persons.filter((person) => person.name !== newPerson.name)
+							)
+						} else {
+							displayNotification(`${e}`, 'danger')
+						}
 					})
 			}
 		}
