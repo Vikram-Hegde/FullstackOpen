@@ -4,9 +4,7 @@ import cors from 'cors'
 import phoneBook from './phoneBook.js'
 import errorHandler from './errorHandler.js'
 
-morgan.token('response', (req, res) =>
-	req.body ? JSON.stringify(req.body) : ''
-)
+morgan.token('response', (req) => (req.body ? JSON.stringify(req.body) : ''))
 
 const app = express()
 app.use(cors())
