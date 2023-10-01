@@ -5,9 +5,7 @@ const blogsRouter = Router()
 
 blogsRouter.get('/', (req, res) => {
 	Blog.find({})
-		.then((result) => {
-			res.json(result)
-		})
+		.then((result) => res.json(result))
 		.catch((e) => {
 			console.error(e)
 			res.sendStatus(500)
@@ -19,9 +17,7 @@ blogsRouter.post('/', (req, res, next) => {
 	const newBlog = new Blog(body)
 	newBlog
 		.save()
-		.then((result) => {
-			res.json(result)
-		})
+		.then((result) => res.json(result))
 		.catch((e) => {
 			next(e)
 		})

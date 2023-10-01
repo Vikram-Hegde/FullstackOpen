@@ -6,7 +6,7 @@ import { MONGO_URI, PORT } from './utils/config.js'
 import blogsRouter from './controllers/blogsRouter.js'
 import { errorHandler, unknownEndPoint } from './utils/middleware.js'
 
-const app = express()
+export const app = express()
 
 app.use(cors())
 app.use(express.json())
