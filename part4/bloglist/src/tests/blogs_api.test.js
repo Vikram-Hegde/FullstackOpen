@@ -18,7 +18,7 @@ test('blogs have id defined', async () => {
 	const response = await api.get('/api/blogs')
 	expect(response.status).toBe(200)
 	console.log(response.body)
-	response.body.forEach((res) => expect(res.id).toBeDefined())
+	response.body.forEach((res) => expect(res._id).toBeDefined())
 }, 15000)
 
 test('post request adds to db', async () => {
