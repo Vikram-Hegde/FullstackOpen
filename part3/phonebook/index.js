@@ -115,8 +115,6 @@ app.put('/api/persons/:id', (request, response, next) => {
 		.catch((e) => next(e))
 })
 
-app.use((request, response) => {
-	response.sendStatus(404)
-})
+app.use((_, response) => response.sendStatus(404))
 
 app.use(errorHandler)
