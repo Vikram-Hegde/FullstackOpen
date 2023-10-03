@@ -48,6 +48,16 @@ test('checking if updating on malformatted id return error', async () => {
 	await api.put('/api/blogs/8965123548').expect(400)
 }, 15000)
 
+test('updating likes', async () => {
+	const updatedLikes = 10
+	const put = await api
+		.put(`/api/blogs/${id}`)
+		.send({ likes: updatedLikes })
+		.expect(200)
+
+	expect(put.body.likes).toBe(updatedLikes)
+})
+
 test('checking if deleteing works', async () => {
 	const response = await api.get('/api/blogs')
 	expect(response.status).toBe(200)
