@@ -18,7 +18,7 @@ test('blogs have id defined', async () => {
 	const response = await api.get('/api/blogs')
 	expect(response.status).toBe(200)
 	console.log(response.body)
-	response.body.forEach((res) => expect(res._id).toBeDefined())
+	response.body.forEach((res) => expect(res.id).toBeDefined())
 }, 15000)
 
 test('post request adds to db', async () => {
@@ -42,6 +42,10 @@ test('post request adds to db', async () => {
 test('checking if deleting on malformatted id return error', async () => {
 	const del = await api.delete('/api/blogs/8965123548')
 	expect(del.status).toBe(400)
+}, 15000)
+
+test('checking if updating on malformatted id return error', async () => {
+	await api.put('/api/blogs/8965123548').expect(400)
 }, 15000)
 
 test('checking if deleteing works', async () => {

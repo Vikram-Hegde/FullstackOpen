@@ -5,11 +5,21 @@ const blogsRouter = Router()
 
 blogsRouter.get('/', async (req, res) => {
 	try {
-		const response = await Blog.find({}).lean()
+		const response = await Blog.find({})
 		res.json(response)
 	} catch (e) {
 		console.error(e)
 		res.sendStatus(500)
+	}
+})
+
+blogsRouter.get('/:id', async (req, res, next) => {
+	try {
+		const id = req.params.id
+		const response = await Blog.findById(id)
+		res.json(response)
+	} catch (e) {
+		next(e)
 	}
 })
 
