@@ -1,8 +1,5 @@
+import { api } from './supertest.js'
 import mongoose from 'mongoose'
-import supertest from 'supertest'
-import { app } from '../index.js'
-
-const api = supertest(app)
 
 // eslint-disable-next-line no-unused-vars
 let id
