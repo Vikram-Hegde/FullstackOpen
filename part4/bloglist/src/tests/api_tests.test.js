@@ -53,12 +53,29 @@ test('updating likes', async () => {
 		.expect(200)
 
 	expect(put.body.likes).toBe(updatedLikes)
-})
+}, 15000)
 
 test('checking if deleteing works', async () => {
 	const response = await api.get('/api/blogs')
 	expect(response.status).toBe(200)
 	await api.delete(`/api/blogs/${id}`).expect(204)
+}, 15000)
+
+test('invalid response for incomplete info', async () => {
+	const newUser = {
+		name: 'Vikram',
+		password: 'dragon',
+	}
+	await api.post('/api/users').send(newUser).expect(400)
+}, 15000)
+
+test('invalid response for invalid info', async () => {
+	const newUser = {
+		name: 'Vikram',
+		password: 'dragon',
+		username: 'vi',
+	}
+	await api.post('/api/users').send(newUser).expect(400)
 }, 15000)
 
 afterAll(async () => {
