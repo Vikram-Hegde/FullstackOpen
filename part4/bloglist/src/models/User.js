@@ -16,6 +16,12 @@ const userSchema = new Schema({
 		required: true,
 		minlength: 3,
 	},
+	bloglist: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Blog',
+		},
+	],
 })
 
 userSchema.set('toJSON', {
