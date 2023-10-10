@@ -1,6 +1,16 @@
 import { Router } from 'express'
 import { Blog } from '../models/Blog.js'
 import { User } from '../models/User.js'
+import jwt from 'jsonwebtoken'
+
+const getToken = (request) => {
+	const authorization = request.get('authorization')
+	if (!(authorization && authorization.startsWith('Bearer '))) {
+		return null
+	}
+
+	return authorization.replace('Bearer ', '')
+}
 
 const blogsRouter = Router()
 
@@ -27,9 +37,14 @@ blogsRouter.get('/:id', async (req, res, next) => {
 blogsRouter.post('/', async (req, res, next) => {
 	try {
 		const { body } = req
-		const newBlog = await Blog.create(body)
 
-		const user = await User.findOne({ username: 'vikram' })
+		console.log(req.get('bearer'))
+
+		const verifyToken = jwt.verify(getToken(req), process.env.SECRET)
+		if (!verifyToken.id) return res.status(401).json({ error: 'invalid token' })
+
+		const newBlog = await Blog.create(body)
+		const user = await User.findById(verifyToken.id)
 
 		newBlog.user = user._id
 

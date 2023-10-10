@@ -12,8 +12,8 @@ export const errorHandler = (err, req, res, next) => {
 	if (err.name === 'ValidationError')
 		return res.status(400).json({ error: `${err.message}` })
 
-	if (err.name === 'DuplicateKeyError')
-		return res.status(409).json({ error: 'username already exists' })
-
+	if (err.name === 'JsonWebTokenError') {
+		return res.status(401).json({ error: `${err.message}` })
+	}
 	return next(err)
 }
