@@ -17,3 +17,17 @@ export const errorHandler = (err, req, res, next) => {
 	}
 	return next(err)
 }
+
+export const extractToken = (req, res, next) => {
+	const getToken = (request) => {
+		const authorization = request.get('authorization')
+		if (!(authorization && authorization.startsWith('Bearer '))) {
+			return null
+		}
+
+		return authorization.replace('Bearer ', '')
+	}
+
+	req.token = getToken(req)
+	next()
+}
