@@ -1,3 +1,6 @@
+import jwt from 'jsonwebtoken'
+import { User } from '../models/User.js'
+
 export const unknownEndPoint = (req, res, next) => {
 	res.sendStatus(404)
 	next()
@@ -21,13 +24,25 @@ export const errorHandler = (err, req, res, next) => {
 export const extractToken = (req, res, next) => {
 	const getToken = (request) => {
 		const authorization = request.get('authorization')
-		if (!(authorization && authorization.startsWith('Bearer '))) {
-			return null
-		}
+		if (!(authorization && authorization.startsWith('Bearer '))) return null
 
 		return authorization.replace('Bearer ', '')
 	}
 
-	req.token = getToken(req)
+	req.token = jwt.verify(getToken(req), process.env.SECRET)
 	next()
+}
+
+export const userExtractor = async (req, res, next) => {
+	try {
+		const user = await User.findById(req.token.id)
+		if (user) {
+			req.user = user
+		} else {
+			req.user = null
+		}
+		next()
+	} catch (e) {
+		next(e)
+	}
 }

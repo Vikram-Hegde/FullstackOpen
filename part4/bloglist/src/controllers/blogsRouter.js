@@ -19,7 +19,11 @@ blogsRouter.get('/:id', async (req, res, next) => {
 	try {
 		const id = req.params.id
 		const response = await Blog.findById(id)
-		res.json(response)
+		if (!response) {
+			res.status(404).json({ error: 'data not found' })
+		} else {
+			res.json(response)
+		}
 	} catch (e) {
 		next(e)
 	}
@@ -30,8 +34,7 @@ blogsRouter.post('/', async (req, res, next) => {
 		const { body } = req
 
 		const newBlog = await Blog.create(body)
-		const verifyToken = jwt.verify(req.token, process.env.SECRET)
-		const user = await User.findById(verifyToken.id)
+		const user = req.user
 
 		newBlog.user = user._id
 
@@ -47,8 +50,14 @@ blogsRouter.post('/', async (req, res, next) => {
 blogsRouter.delete('/:id', async (req, res, next) => {
 	try {
 		const id = req.params.id
-		await Blog.findByIdAndDelete(id)
-		res.sendStatus(204)
+		const blog = await Blog.findById(id)
+		if (blog.user.toString() === req.token.id) {
+			await blog.deleteOne()
+			// console.log(blog.user, req.token.id)
+			res.sendStatus(204)
+		} else {
+			res.status(401).json({ error: 'invalid token' })
+		}
 	} catch (e) {
 		next(e)
 	}

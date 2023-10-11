@@ -8,6 +8,7 @@ import {
 	errorHandler,
 	extractToken,
 	unknownEndPoint,
+	userExtractor,
 } from './utils/middleware.js'
 import usersRouter from './controllers/usersRouter.js'
 import loginRouter from './controllers/loginRouter.js'
@@ -18,6 +19,7 @@ app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'))
 app.use(extractToken)
+app.use(userExtractor)
 app.use('/api/login', loginRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/blogs', blogsRouter)

@@ -21,5 +21,3 @@ describe('total likes', () => {
 		expect(totalLikes(listWithOneBlog)).toBe(5)
 	})
 })
-
-describe('favorite blog', () => {})
