@@ -1,6 +1,11 @@
 import { api } from './supertest.js'
 import mongoose from 'mongoose'
 
+/*
+	Poorvi JWT - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00
+	Vikram JWT - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpa3JhbSIsImlkIjoiNjUxZWZkNmVhZWFmY2ZiY2ZkZTlkMWVlIiwiaWF0IjoxNjk3MTg2OTU3fQ.C3RFLofWEJQTdrPFFqsE8V59pU0igNKZgMseDzub_nY
+*/
+
 // eslint-disable-next-line no-unused-vars
 let id
 
@@ -26,6 +31,7 @@ describe('crud operations on /api/blogs', () => {
 			author: 'Michael Chan',
 			url: 'https://reactpatterns.com/',
 			likes: 7,
+			user: '651efd6eaeafcfbcfde9d1ee',
 		}
 
 		const response = await api.post('/api/blogs').send(newBlog)
@@ -78,6 +84,18 @@ describe('invalid and incomplete info /api/users', () => {
 		}
 		await api.post('/api/users').send(newUser).expect(400)
 	}, 15000)
+})
+
+describe('token based authentication tests', () => {
+	test('checking invalid token error', async () => {
+		await api
+			.delete('/api/blogs/6524f1a02797ca0f0161e2f3')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
+			.expect(401)
+	})
 })
 
 afterAll(async () => {

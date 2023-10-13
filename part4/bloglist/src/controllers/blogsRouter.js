@@ -1,7 +1,5 @@
 import { Router } from 'express'
 import { Blog } from '../models/Blog.js'
-import { User } from '../models/User.js'
-import jwt from 'jsonwebtoken'
 
 const blogsRouter = Router()
 
@@ -18,7 +16,7 @@ blogsRouter.get('/', async (req, res) => {
 blogsRouter.get('/:id', async (req, res, next) => {
 	try {
 		const id = req.params.id
-		const response = await Blog.findById(id)
+		const response = await Blog.findById(id).populate('user')
 		if (!response) {
 			res.status(404).json({ error: 'data not found' })
 		} else {
@@ -53,7 +51,6 @@ blogsRouter.delete('/:id', async (req, res, next) => {
 		const blog = await Blog.findById(id)
 		if (blog.user.toString() === req.token.id) {
 			await blog.deleteOne()
-			// console.log(blog.user, req.token.id)
 			res.sendStatus(204)
 		} else {
 			res.status(401).json({ error: 'invalid token' })
@@ -67,13 +64,18 @@ blogsRouter.put('/:id', async (req, res, next) => {
 	try {
 		const { body } = req
 		const id = req.params.id
-		const updatedBlog = await Blog.findByIdAndUpdate(id, body, {
-			runValidators: true,
-			context: 'query',
-			new: true,
-		})
-		const response = await updatedBlog.save()
-		res.json(response)
+		const blog = await Blog.findById(id)
+		if (blog.user.toString() === req.token.id) {
+			const updatedBlog = await Blog.findByIdAndUpdate(id, body, {
+				runValidators: true,
+				context: 'query',
+				new: true,
+			})
+			const response = await updatedBlog.save()
+			res.json(response)
+		} else {
+			res.status(401).json({ error: 'invalid token' })
+		}
 	} catch (e) {
 		next(e)
 	}
