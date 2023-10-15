@@ -13,18 +13,32 @@ describe('crud operations on /api/blogs', () => {
 	test('blogs are returned as json', async () => {
 		await api
 			.get('/api/blogs')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
 			.expect(200)
 			.expect('Content-Type', /application\/json/)
 	}, 15000)
 
 	test('blogs have id defined', async () => {
-		const response = await api.get('/api/blogs')
+		const response = await api
+			.get('/api/blogs')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
 		expect(response.status).toBe(200)
 		response.body.forEach((res) => expect(res.id).toBeDefined())
 	}, 15000)
 
 	test('post request adds to db', async () => {
-		const beforePost = await api.get('/api/blogs')
+		const beforePost = await api
+			.get('/api/blogs')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
 		expect(beforePost.status).toBe(200)
 		const newBlog = {
 			title: 'React patterns',
@@ -34,21 +48,44 @@ describe('crud operations on /api/blogs', () => {
 			user: '651efd6eaeafcfbcfde9d1ee',
 		}
 
-		const response = await api.post('/api/blogs').send(newBlog)
+		const response = await api
+			.post('/api/blogs')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
+			.send(newBlog)
 		id = response.body.id
 		expect(response.status).toBe(200)
 
-		const afterPost = await api.get('/api/blogs')
+		const afterPost = await api
+			.get('/api/blogs')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
 		expect(afterPost.body.length).toBe(beforePost.body.length + 1)
 	}, 15000)
 
 	test('checking if deleting on malformatted id return error', async () => {
-		const del = await api.delete('/api/blogs/8965123548')
+		const del = await api
+			.delete('/api/blogs/8965123548')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
 		expect(del.status).toBe(400)
 	}, 15000)
 
 	test('checking if updating on malformatted id return error', async () => {
-		await api.put('/api/blogs/8965123548').expect(400)
+		await api
+			.put('/api/blogs/8965123548')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
+
+			.expect(400)
 	}, 15000)
 
 	test('updating likes', async () => {
@@ -56,15 +93,30 @@ describe('crud operations on /api/blogs', () => {
 		const put = await api
 			.put(`/api/blogs/${id}`)
 			.send({ likes: updatedLikes })
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
 			.expect(200)
 
 		expect(put.body.likes).toBe(updatedLikes)
 	}, 15000)
 
 	test('checking if deleteing works', async () => {
-		const response = await api.get('/api/blogs')
+		const response = await api
+			.get('/api/blogs')
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
 		expect(response.status).toBe(200)
-		await api.delete(`/api/blogs/${id}`).expect(204)
+		await api
+			.delete(`/api/blogs/${id}`)
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
+			.expect(204)
 	}, 15000)
 })
 describe('invalid and incomplete info /api/users', () => {
@@ -73,7 +125,14 @@ describe('invalid and incomplete info /api/users', () => {
 			name: 'Vikram',
 			password: 'dragon',
 		}
-		await api.post('/api/users').send(newUser).expect(400)
+		await api
+			.post('/api/users')
+			.send(newUser)
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
+			.expect(400)
 	}, 15000)
 
 	test('invalid response for invalid info', async () => {
@@ -82,7 +141,14 @@ describe('invalid and incomplete info /api/users', () => {
 			password: 'dragon',
 			username: 'vi',
 		}
-		await api.post('/api/users').send(newUser).expect(400)
+		await api
+			.post('/api/users')
+			.send(newUser)
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
+			.expect(400)
 	}, 15000)
 })
 
