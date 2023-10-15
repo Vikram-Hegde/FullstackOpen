@@ -162,6 +162,46 @@ describe('token based authentication tests', () => {
 			)
 			.expect(401)
 	})
+
+	test('checking post request on /blogs while logged in', async () => {
+		const newBlog = {
+			title: 'React patterns',
+			author: 'Michael Chan',
+			url: 'https://reactpatterns.com/',
+			likes: 7,
+			user: '651efd6eaeafcfbcfde9d1ee',
+		}
+		const response = await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpa3JhbSIsImlkIjoiNjUxZWZkNmVhZWFmY2ZiY2ZkZTlkMWVlIiwiaWF0IjoxNjk3MTg2OTU3fQ.C3RFLofWEJQTdrPFFqsE8V59pU0igNKZgMseDzub_nY'
+			)
+			.expect(200)
+		console.log(response.body)
+		id = response.body.id
+	})
+
+	test('checking unauthorized access', async () => {
+		await api
+			.delete(`/api/blogs/${id}`)
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+			)
+			.expect(401)
+	})
+
+	test('checking successful deletion (from logged in user)', async () => {
+		await api
+			.delete(`/api/blogs/${id}`)
+			.set(
+				'Authorization',
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpa3JhbSIsImlkIjoiNjUxZWZkNmVhZWFmY2ZiY2ZkZTlkMWVlIiwiaWF0IjoxNjk3MTg2OTU3fQ.C3RFLofWEJQTdrPFFqsE8V59pU0igNKZgMseDzub_nY'
+			)
+			.expect(204)
+	})
 })
 
 afterAll(async () => {
