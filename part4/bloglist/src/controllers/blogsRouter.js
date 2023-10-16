@@ -5,7 +5,10 @@ const blogsRouter = Router()
 
 blogsRouter.get('/', async (req, res) => {
 	try {
-		const response = await Blog.find({}).populate('user')
+		const response = await Blog.find({}).populate('user', {
+			username: 1,
+			name: 1,
+		})
 		res.json(response)
 	} catch (e) {
 		console.error(e)

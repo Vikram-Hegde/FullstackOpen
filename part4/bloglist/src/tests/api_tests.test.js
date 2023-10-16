@@ -8,15 +8,14 @@ import mongoose from 'mongoose'
 
 // eslint-disable-next-line no-unused-vars
 let id
+let authHeader =
+	'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
 
 describe('crud operations on /api/blogs', () => {
 	test('blogs are returned as json', async () => {
 		await api
 			.get('/api/blogs')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 			.expect(200)
 			.expect('Content-Type', /application\/json/)
 	}, 15000)
@@ -24,10 +23,7 @@ describe('crud operations on /api/blogs', () => {
 	test('blogs have id defined', async () => {
 		const response = await api
 			.get('/api/blogs')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 		expect(response.status).toBe(200)
 		response.body.forEach((res) => expect(res.id).toBeDefined())
 	}, 15000)
@@ -35,55 +31,39 @@ describe('crud operations on /api/blogs', () => {
 	test('post request adds to db', async () => {
 		const beforePost = await api
 			.get('/api/blogs')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 		expect(beforePost.status).toBe(200)
 		const newBlog = {
 			title: 'React patterns',
 			author: 'Michael Chan',
 			url: 'https://reactpatterns.com/',
 			likes: 7,
-			user: '651efd6eaeafcfbcfde9d1ee',
 		}
 
 		const response = await api
 			.post('/api/blogs')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 			.send(newBlog)
 		id = response.body.id
 		expect(response.status).toBe(200)
 
 		const afterPost = await api
 			.get('/api/blogs')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 		expect(afterPost.body.length).toBe(beforePost.body.length + 1)
 	}, 15000)
 
 	test('checking if deleting on malformatted id return error', async () => {
 		const del = await api
 			.delete('/api/blogs/8965123548')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 		expect(del.status).toBe(400)
 	}, 15000)
 
 	test('checking if updating on malformatted id return error', async () => {
 		await api
 			.put('/api/blogs/8965123548')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 
 			.expect(400)
 	}, 15000)
@@ -93,10 +73,7 @@ describe('crud operations on /api/blogs', () => {
 		const put = await api
 			.put(`/api/blogs/${id}`)
 			.send({ likes: updatedLikes })
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 			.expect(200)
 
 		expect(put.body.likes).toBe(updatedLikes)
@@ -105,10 +82,7 @@ describe('crud operations on /api/blogs', () => {
 	test('checking if deleteing works', async () => {
 		const response = await api
 			.get('/api/blogs')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 		expect(response.status).toBe(200)
 		await api
 			.delete(`/api/blogs/${id}`)
@@ -128,10 +102,7 @@ describe('invalid and incomplete info /api/users', () => {
 		await api
 			.post('/api/users')
 			.send(newUser)
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 			.expect(400)
 	}, 15000)
 
@@ -144,10 +115,7 @@ describe('invalid and incomplete info /api/users', () => {
 		await api
 			.post('/api/users')
 			.send(newUser)
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 			.expect(400)
 	}, 15000)
 })
@@ -156,10 +124,7 @@ describe('token based authentication tests', () => {
 	test('checking invalid token error', async () => {
 		await api
 			.delete('/api/blogs/6524f1a02797ca0f0161e2f3')
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
-			)
+			.set('Authorization', authHeader)
 			.expect(401)
 	})
 
@@ -174,10 +139,7 @@ describe('token based authentication tests', () => {
 		const response = await api
 			.post('/api/blogs')
 			.send(newBlog)
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpa3JhbSIsImlkIjoiNjUxZWZkNmVhZWFmY2ZiY2ZkZTlkMWVlIiwiaWF0IjoxNjk3MTg2OTU3fQ.C3RFLofWEJQTdrPFFqsE8V59pU0igNKZgMseDzub_nY'
-			)
+			.set('Authorization', authHeader)
 			.expect(200)
 		console.log(response.body)
 		id = response.body.id
@@ -188,7 +150,7 @@ describe('token based authentication tests', () => {
 			.delete(`/api/blogs/${id}`)
 			.set(
 				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvb3J2aTEyMjQiLCJpZCI6IjY1MjQwZjRjYzUxYTlkYzI5MDk1NDc5MSIsImlhdCI6MTY5NzE4Njg5Nn0.a6kVwSoiNr-HCBeiUhnVqEA3wm6lAWKPXgTc9nVxM00'
+				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpa3JhbSIsImlkIjoiNjUxZWZkNmVhZWFmY2ZiY2ZkZTlkMWVlIiwiaWF0IjoxNjk3MTg2OTU3fQ.C3RFLofWEJQTdrPFFqsE8V59pU0igNKZgMseDzub_nY'
 			)
 			.expect(401)
 	})
@@ -196,10 +158,7 @@ describe('token based authentication tests', () => {
 	test('checking successful deletion (from logged in user)', async () => {
 		await api
 			.delete(`/api/blogs/${id}`)
-			.set(
-				'Authorization',
-				'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpa3JhbSIsImlkIjoiNjUxZWZkNmVhZWFmY2ZiY2ZkZTlkMWVlIiwiaWF0IjoxNjk3MTg2OTU3fQ.C3RFLofWEJQTdrPFFqsE8V59pU0igNKZgMseDzub_nY'
-			)
+			.set('Authorization', authHeader)
 			.expect(204)
 	})
 })
