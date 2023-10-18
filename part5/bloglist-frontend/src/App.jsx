@@ -2,20 +2,32 @@ import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/user'
+import Notification from './components/Notification'
 
-const LoginForm = ({ setLoggedIn }) => {
+const LoginForm = ({ setLoggedIn, setNotification }) => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
-		const response = await loginService.loginUser({
-			username,
-			password,
-		})
-		if (response?.token) {
-			setLoggedIn(true)
-			sessionStorage.setItem('token', JSON.stringify(response))
+		try {
+			const response = await loginService.loginUser({
+				username,
+				password,
+			})
+			if (response?.token) {
+				setLoggedIn(true)
+				sessionStorage.setItem('token', JSON.stringify(response))
+				setNotification({
+					message: `${response.username} logged in`,
+					type: 'success',
+				})
+			}
+		} catch (e) {
+			setNotification({
+				message: 'invalid username or password',
+				type: 'danger',
+			})
 		}
 	}
 
@@ -47,7 +59,7 @@ const LoginForm = ({ setLoggedIn }) => {
 	)
 }
 
-const NewBlogForm = ({ setBlogs }) => {
+const AddBlog = ({ setBlogs, setNotification }) => {
 	const handleSubmit = async (e) => {
 		e.preventDefault()
 		const formData = new FormData(e.target)
@@ -59,6 +71,15 @@ const NewBlogForm = ({ setBlogs }) => {
 		const response = await blogService.addBlog(newBlog)
 		if (response?.id) {
 			setBlogs((prevBlogs) => [...prevBlogs, response])
+			setNotification({
+				message: `Added ${newBlog.title} by ${newBlog.author}`,
+				type: 'success',
+			})
+		} else {
+			setNotification({
+				message: 'Unable to add new blog',
+				type: 'danger',
+			})
 		}
 		e.target.reset()
 	}
@@ -81,7 +102,7 @@ const NewBlogForm = ({ setBlogs }) => {
 	)
 }
 
-const Blogs = ({ setLoggedIn }) => {
+const Blogs = ({ setLoggedIn, setNotification }) => {
 	const [blogs, setBlogs] = useState([])
 	const user = JSON.parse(sessionStorage.getItem('token'))
 
@@ -100,7 +121,7 @@ const Blogs = ({ setLoggedIn }) => {
 			<p>
 				{user.name} has logged in <button onClick={handleLogout}>logout</button>
 			</p>
-			<NewBlogForm setBlogs={setBlogs} />
+			<AddBlog setBlogs={setBlogs} setNotification={setNotification} />
 			{blogs.map((blog) => (
 				<Blog key={blog.id} blog={blog} />
 			))}
@@ -112,12 +133,25 @@ const App = () => {
 	const [isLoggedIn, setLoggedIn] = useState(
 		sessionStorage.getItem('token') !== null
 	)
+	const [notification, setNotification] = useState(false)
+
+	if (notification) {
+		setTimeout(() => {
+			setNotification(false)
+		}, 5000)
+	}
+
 	return (
 		<main>
+			{notification && <Notification data={notification} />}
+
 			{isLoggedIn ? (
-				<Blogs setLoggedIn={setLoggedIn} />
+				<Blogs setLoggedIn={setLoggedIn} setNotification={setNotification} />
 			) : (
-				<LoginForm setLoggedIn={setLoggedIn} />
+				<LoginForm
+					setLoggedIn={setLoggedIn}
+					setNotification={setNotification}
+				/>
 			)}
 		</main>
 	)
