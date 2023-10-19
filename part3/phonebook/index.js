@@ -22,7 +22,7 @@ app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`)
 })
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (_, response) => {
 	phoneBook
 		.find({})
 		.then((result) => {
@@ -34,7 +34,7 @@ app.get('/api/persons', (request, response) => {
 		})
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (_, response) => {
 	phoneBook
 		.countDocuments({})
 		.then((count) => {

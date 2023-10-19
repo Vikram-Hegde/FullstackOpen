@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/user'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const LoginForm = ({ setLoggedIn, setNotification }) => {
 	const [username, setUsername] = useState('')
@@ -88,13 +89,13 @@ const AddBlog = ({ setBlogs, setNotification }) => {
 			<h1>Add new blog</h1>
 			<form onSubmit={handleSubmit}>
 				<label htmlFor="#title">Title</label>
-				<input type="text" id="title" name="title" />
+				<input type="text" id="title" name="title" required />
 				<br />
 				<label htmlFor="#author">Author</label>
-				<input type="text" id="author" name="author" />
+				<input type="text" id="author" name="author" required />
 				<br />
 				<label htmlFor="#url">URL</label>
-				<input type="url" id="url" name="url" />
+				<input type="url" id="url" name="url" required />
 				<br />
 				<button>add blog</button>
 			</form>
@@ -121,7 +122,9 @@ const Blogs = ({ setLoggedIn, setNotification }) => {
 			<p>
 				{user.name} has logged in <button onClick={handleLogout}>logout</button>
 			</p>
-			<AddBlog setBlogs={setBlogs} setNotification={setNotification} />
+			<Togglable buttonLabel="show add blog">
+				<AddBlog setBlogs={setBlogs} setNotification={setNotification} />
+			</Togglable>
 			{blogs.map((blog) => (
 				<Blog key={blog.id} blog={blog} />
 			))}
