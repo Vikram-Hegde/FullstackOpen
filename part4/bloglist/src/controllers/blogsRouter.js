@@ -77,7 +77,7 @@ blogsRouter.put('/:id', async (req, res, next) => {
 				runValidators: true,
 				context: 'query',
 				new: true,
-			})
+			}).populate('user')
 			const response = await updatedBlog.save()
 			res.json(response)
 		} else {

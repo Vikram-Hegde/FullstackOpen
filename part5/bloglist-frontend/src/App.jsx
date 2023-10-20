@@ -107,6 +107,8 @@ const Blogs = ({ setLoggedIn, setNotification }) => {
 	const [blogs, setBlogs] = useState([])
 	const user = JSON.parse(sessionStorage.getItem('token'))
 
+	const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
+
 	const handleLogout = () => {
 		sessionStorage.removeItem('token')
 		setLoggedIn(false)
@@ -125,7 +127,7 @@ const Blogs = ({ setLoggedIn, setNotification }) => {
 			<Togglable buttonLabel="show add blog">
 				<AddBlog setBlogs={setBlogs} setNotification={setNotification} />
 			</Togglable>
-			{blogs.map((blog) => (
+			{sortedBlogs?.map((blog) => (
 				<Blog key={blog.id} blog={blog} />
 			))}
 		</div>

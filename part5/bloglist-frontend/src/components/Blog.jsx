@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import blogs from '../services/blogs'
 
 const blogStyle = {
 	paddingTop: 10,
@@ -8,11 +9,25 @@ const blogStyle = {
 	marginBottom: 5,
 }
 
-const Blog = ({ blog }) => {
+const Blog = (props) => {
 	const [showDetails, setShowDetails] = useState(false)
+	const [blog, setBlog] = useState(props.blog)
 
 	const showWhenVisible = { display: showDetails ? '' : 'none' }
 	const buttonLabel = showDetails ? 'hide' : 'show'
+
+	const handleLike = async () => {
+		const updatedBlog = await blogs.updateBlog(
+			{
+				...blog,
+				likes: blog.likes + 1,
+				user: blog.user.id,
+			},
+			blog.id
+		)
+
+		setBlog(updatedBlog)
+	}
 
 	return (
 		<div style={blogStyle}>
@@ -23,9 +38,9 @@ const Blog = ({ blog }) => {
 			<div style={showWhenVisible}>
 				<a href={blog.url}>{blog.url}</a>
 				<div>
-					likes {blog.likes} <button>like</button>
+					likes {blog.likes} <button onClick={handleLike}>like</button>
 				</div>
-				<div>{blog.user.name}</div>
+				<div>{blog.user?.name}</div>
 			</div>
 		</div>
 	)

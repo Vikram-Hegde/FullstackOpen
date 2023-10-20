@@ -1,27 +1,27 @@
 import axios from 'axios'
-const baseUrl = '/api/blogs'
+const baseURL = '/api/blogs'
+
+const headers = {
+	headers: {
+		Authorization: `Bearer ${
+			JSON.parse(sessionStorage.getItem('token')).token
+		}`,
+	},
+}
 
 const getAll = async () => {
-	const response = await axios.get(baseUrl, {
-		headers: {
-			Authorization: `Bearer ${
-				JSON.parse(sessionStorage.getItem('token')).token
-			}`,
-		},
-	})
+	const response = await axios.get(baseURL, headers)
 	return response.data
 }
 
 const addBlog = async (newBlog) => {
-	const response = await axios.post(baseUrl, newBlog, {
-		headers: {
-			Authorization: `Bearer ${
-				JSON.parse(sessionStorage.getItem('token')).token
-			}`,
-		},
-	})
-
+	const response = await axios.post(baseURL, newBlog, headers)
 	return response.data
 }
 
-export default { getAll, addBlog }
+const updateBlog = async (updatedBlog, id) => {
+	const response = await axios.put(`${baseURL}/${id}`, updatedBlog, headers)
+	return response.data
+}
+
+export default { getAll, addBlog, updateBlog }
