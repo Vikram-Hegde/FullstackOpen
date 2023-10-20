@@ -39,7 +39,11 @@ blogsRouter.post('/', async (req, res, next) => {
 
 		newBlog.user = user._id
 
-		const response = await newBlog.save()
+		const response = await newBlog.populate('user', {
+			username: 1,
+			name: 1,
+		})
+		await response.save()
 		user.bloglist = user.bloglist.concat(response._id)
 		await user.save()
 		res.json(response)
