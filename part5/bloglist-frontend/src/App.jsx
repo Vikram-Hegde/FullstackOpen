@@ -114,8 +114,23 @@ const Blogs = ({ setLoggedIn, setNotification }) => {
 		setLoggedIn(false)
 	}
 
+	const handleDelete = async (id) => {
+		try {
+			if (window.confirm('Are you sure?')) {
+				await blogService.deleteBlog(id)
+				setBlogs(blogs.filter((blog) => blog.id !== id))
+			}
+		} catch (e) {
+			console.log(e)
+			setNotification({
+				message: 'unable to delete blog',
+				type: 'danger',
+			})
+		}
+	}
+
 	useEffect(() => {
-		blogService.getAll().then((blogs) => setBlogs(blogs))
+		blogService.getAll().then(setBlogs)
 	}, [])
 
 	return (
@@ -128,7 +143,7 @@ const Blogs = ({ setLoggedIn, setNotification }) => {
 				<AddBlog setBlogs={setBlogs} setNotification={setNotification} />
 			</Togglable>
 			{sortedBlogs?.map((blog) => (
-				<Blog key={blog.id} blog={blog} />
+				<Blog key={blog.id} blog={blog} handleDelete={handleDelete} />
 			))}
 		</div>
 	)

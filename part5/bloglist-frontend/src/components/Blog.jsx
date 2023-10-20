@@ -13,7 +13,11 @@ const Blog = (props) => {
 	const [showDetails, setShowDetails] = useState(false)
 	const [blog, setBlog] = useState(props.blog)
 
+	const { handleDelete } = props
+
 	const showWhenVisible = { display: showDetails ? '' : 'none' }
+	const showDelete =
+		blog.user.username === JSON.parse(sessionStorage.getItem('token'))?.username
 	const buttonLabel = showDetails ? 'hide' : 'show'
 
 	const handleLike = async () => {
@@ -41,6 +45,9 @@ const Blog = (props) => {
 					likes {blog.likes} <button onClick={handleLike}>like</button>
 				</div>
 				<div>{blog.user?.name}</div>
+				{showDelete && (
+					<button onClick={() => handleDelete(blog.id)}>delete</button>
+				)}
 			</div>
 		</div>
 	)

@@ -4,7 +4,7 @@ const baseURL = '/api/blogs'
 const headers = {
 	headers: {
 		Authorization: `Bearer ${
-			JSON.parse(sessionStorage.getItem('token')).token
+			JSON.parse(sessionStorage.getItem('token'))?.token
 		}`,
 	},
 }
@@ -24,4 +24,8 @@ const updateBlog = async (updatedBlog, id) => {
 	return response.data
 }
 
-export default { getAll, addBlog, updateBlog }
+const deleteBlog = async (id) => {
+	await axios.delete(`${baseURL}/${id}`, headers)
+}
+
+export default { getAll, addBlog, updateBlog, deleteBlog }
