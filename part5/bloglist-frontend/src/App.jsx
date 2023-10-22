@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/user'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import blogService from './services/blogs'
+import loginService from './services/user'
 
 const LoginForm = ({ setLoggedIn, setNotification }) => {
 	const [username, setUsername] = useState('')
@@ -60,7 +60,7 @@ const LoginForm = ({ setLoggedIn, setNotification }) => {
 	)
 }
 
-const AddBlog = ({ setBlogs, setNotification }) => {
+const AddBlog = ({ setBlogs, setNotification, toggleVisibility }) => {
 	const handleSubmit = async (e) => {
 		e.preventDefault()
 		const formData = new FormData(e.target)
@@ -72,6 +72,7 @@ const AddBlog = ({ setBlogs, setNotification }) => {
 		const response = await blogService.addBlog(newBlog)
 		if (response?.id) {
 			setBlogs((prevBlogs) => [...prevBlogs, response])
+			toggleVisibility()
 			setNotification({
 				message: `Added ${newBlog.title} by ${newBlog.author}`,
 				type: 'success',
@@ -107,6 +108,8 @@ const Blogs = ({ setLoggedIn, setNotification }) => {
 	const [blogs, setBlogs] = useState([])
 	const user = JSON.parse(sessionStorage.getItem('token'))
 
+	const addBlogRef = useRef()
+
 	const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
 
 	const handleLogout = () => {
@@ -139,8 +142,12 @@ const Blogs = ({ setLoggedIn, setNotification }) => {
 			<p>
 				{user.name} has logged in <button onClick={handleLogout}>logout</button>
 			</p>
-			<Togglable buttonLabel="show add blog">
-				<AddBlog setBlogs={setBlogs} setNotification={setNotification} />
+			<Togglable buttonLabel="show add blog" ref={addBlogRef}>
+				<AddBlog
+					setBlogs={setBlogs}
+					setNotification={setNotification}
+					toggleVisibility={() => addBlogRef.current()}
+				/>
 			</Togglable>
 			{sortedBlogs?.map((blog) => (
 				<Blog key={blog.id} blog={blog} handleDelete={handleDelete} />
